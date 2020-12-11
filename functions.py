@@ -12,7 +12,7 @@ def preprocess_images(images,visualise=True):
     if visualise:
         plt.imshow(images[0])
         plt.show()
-    images = dataset_resize(images, (config.model_input_shape[0], config.model_input_shape[1]))
+    images = dataset_resize(images, (config.input_resize_shape[0], config.input_resize_shape[1]))
     print("Dataset images resized to ",images[0].shape, " dtype=",images.dtype,)
     if visualise:
         plt.imshow(images[0])
