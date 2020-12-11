@@ -7,7 +7,7 @@ import cv2
 import config
 
 def preprocess_images(images,visualise=True):
-    images = mask_images(images,config.image_below_horizon_mask)
+    images = mask_images(images, config.crop_mask)
     print ("Dataset images cropped to shape of ",images[0].shape," dtype=",images.dtype,)
     if visualise:
         plt.imshow(images[0])
@@ -68,7 +68,7 @@ def images_load(list):
     print("Loaded dataset of ", dataset_size, images[0].shape, "dtype=", images.dtype, " images")
     return images
 
-def mask_images(images,mask=config.image_below_horizon_mask):
+def mask_images(images, mask=config.crop_mask):
     crop_imgs = images[:,mask[0]:mask[1], mask[2]:mask[3]]
     return crop_imgs
 
