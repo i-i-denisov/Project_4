@@ -5,9 +5,11 @@ import tensorflow as tf
 import functions
 import config
 import os.path
-import tensorflow.keras as keras
+import keras
 import csv
 import matplotlib.image as mpimg
+import cv2
+#from keras.backend import tf as ktf
 
 center_images=[]
 steering_angles=[]
@@ -52,7 +54,8 @@ else:
     dataset_size=len(steering_angles)
 
 
-    images,steering_angles=functions.augment_dataset(images,steering_angles,config.visualise_loading_dataset)
+    if config.mirror_augment_enable:
+        images,steering_angles=functions.augment_dataset(images,steering_angles,config.visualise_loading_dataset)
     print ("Dataset of ",images.shape[0], "x", images[0].shape, "dtype=", images.dtype, " images")
     #saving dataset to pickle
     images_file=open(config.images_pickle,'wb')
@@ -70,25 +73,31 @@ if config.visualise_loading_dataset:
 
 ##trainig pipeline
 imgshape=images[0].shape
-inputs=tf.keras.Input(imgshape)
+inputs=keras.Input(imgshape)
 #TODO crop and resize here
-crop=tf.keras.layers.Cropping2D(cropping=((config.crop_mask[0],imgshape[0]-config.crop_mask[1]),(config.crop_mask[2],imgshape[1]-config.crop_mask[3])))(inputs)
+crop=keras.layers.Cropping2D(cropping=((config.crop_mask[0],imgshape[0]-config.crop_mask[1]),(config.crop_mask[2],imgshape[1]-config.crop_mask[3])))(inputs)
 #print(crop)
-resize=tf.keras.layers.Lambda(lambda image: tf.image.resize(image, config.input_resize_shape[0:2]))(crop)
-#print(resize)
 mean = 128
-normalize=tf.keras.layers.Lambda(lambda x: x-mean )(resize)
-print(normalize)
-MobileNET=tf.keras.applications.MobileNet(
-    input_shape=config.input_resize_shape, alpha=0.25, include_top=False, weights='imagenet',
-    input_tensor=normalize, pooling="avg")
-if config.freeze_weights:
-    for layer in MobileNET.layers:
-            layer.trainable=False
-FC1=keras.layers.Dense(100,activation='relu')(MobileNET.output)
+normalize=keras.layers.Lambda(lambda x: (x-mean)/mean )(crop)
+#print(normalize)
+conv1=keras.layers.Conv2D(24,5,strides=(2, 2),activation='relu')(normalize)
+#print (conv1)
+conv2=keras.layers.Conv2D(36,5,strides=(2, 2),activation='relu')(conv1)
+#print (conv2)
+conv3=keras.layers.Conv2D(48,5,strides=(2, 2),activation='relu')(conv2)
+#print (conv3)
+conv4=keras.layers.Conv2D(64,3,activation='relu')(conv3)
+#print (conv4)
+conv5=keras.layers.Conv2D(64,3,activation='relu')(conv4)
+#print (conv5)
+flat=keras.layers.Flatten()(conv5)
+#print(flat)
+FC1=keras.layers.Dense(100,activation='relu')(flat)
 FC_dropout_1=keras.layers.Dropout(rate=config.dropout_rate)(FC1)
 FC2=keras.layers.Dense(10,activation='relu')(FC_dropout_1)
 FC_dropout_2=keras.layers.Dropout(rate=config.dropout_rate)(FC2)
+#FC3=keras.layers.Dense(10,activation='relu')(FC_dropout_2)
+#FC_dropout_3=keras.layers.Dropout(rate=config.dropout_rate)(FC3)
 steer=keras.layers.Dense(1,activation='relu')(FC_dropout_2)
 model=keras.Model(inputs=inputs, outputs=steer)
 model.summary()
@@ -104,7 +113,6 @@ model.fit(x=images,
     verbose=1,
     callbacks=None,
     validation_split=config.validation_split,
-    shuffle=True,
-    use_multiprocessing=True,
+    shuffle=True
 )
-model.save(config.model_savename,save_format='h5')
+model.save(config.model_savename)
