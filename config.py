@@ -1,18 +1,22 @@
 import keras
-force_dataset_reload=True
+force_dataset_reload=False
 visualise_loading_dataset=False
-mirror_augment_enable=False
+mirror_augment_enable=True
 freeze_weights=True
+discard_zero_steering_angles=False
+limit_zero_steering_angles=False
 zero_steering_angle_frames_limit=500
 validation_split=0.2
-batch_size = 192
+batch_size = 32
 epochs = 30
 dropout_rate=0.5
-learning_rate=0.01
+learning_rate=0.001
+lr_decay=0.75
 optimizer = keras.optimizers.Adam(lr=learning_rate)
 loss=keras.losses.mse
-metrics=[keras.metrics.mae]
+metrics=[keras.metrics.mse]
 filepath="/home/workspace/CarND-Behavioral-Cloning-P3/drive_data/data/"
+filepath='c:/Tools/Udacity/Project_4/data/'
 filename="driving_log.csv"
 images_pickle=filepath+"images.dump"
 labels_pickle=filepath+"labels.dump"
