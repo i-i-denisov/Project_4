@@ -38,11 +38,15 @@ else:
         #zero_steering_frames=0
         for row in reader:
             angle=float(row[3])
-            if angle==0:
+            if (angle==0)and(config.discard_zero_steering_angles):
                 zero_center_images.append(config.filepath+row[0])
             else:
                 center_images.append(config.filepath+row[0])
                 steering_angles.append(angle)
+                center_images.append(config.filepath+row[1].strip())
+                steering_angles.append(angle-config.side_cameras_steering_offset)
+                center_images.append(config.filepath+row[2].strip())
+                steering_angles.append(angle + config.side_cameras_steering_offset)
             #throttle_positions.append(float(row[4]))
             #brake_positions.append(float(row[5]))
             #speed_values.append(float(row[6]))

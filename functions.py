@@ -56,11 +56,19 @@ def augment_w_mirror(images,labels):
     return aug_images,aug_labels
 
 def images_load(list):
-    image = cv2.imread(list[0])
+    try:
+        image = cv2.imread(list[0])
+    except:
+        print ("Error opening file ",list[0])
+        return None
     images = np.empty((len(list),image.shape[0],image.shape[1],image.shape[2]),dtype='uint8')
     i=0
     for file in list:
-        image=cv2.imread(file)
+        try:
+            image=cv2.imread(file)
+        except:
+            print("Error opening file ", file)
+            break
         image=np.expand_dims(image, axis=0)
         images[i, :, :,:] = image
         i+=1
