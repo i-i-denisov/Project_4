@@ -1,5 +1,5 @@
 import keras
-force_dataset_reload=False
+force_dataset_reload=True
 visualise_loading_dataset=False
 mirror_augment_enable=True
 freeze_weights=True
@@ -16,7 +16,7 @@ optimizer = keras.optimizers.Adam(lr=learning_rate)
 loss=keras.losses.mse
 metrics=[keras.metrics.mse]
 filepath="/home/workspace/CarND-Behavioral-Cloning-P3/drive_data/data/"
-filepath='c:/Tools/Udacity/Project_4/data/'
+#filepath='c:/Tools/Udacity/Project_4/data/'
 filename="driving_log.csv"
 images_pickle=filepath+"images.dump"
 labels_pickle=filepath+"labels.dump"
