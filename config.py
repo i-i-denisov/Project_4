@@ -6,6 +6,7 @@ mirror_augment_enable=False
 freeze_weights=True
 discard_zero_steering_angles=False
 limit_zero_steering_angles=False
+use_side_cams=True
 side_cameras_steering_offset=0.2
 zero_steering_angle_frames_limit=500
 validation_split=0.2

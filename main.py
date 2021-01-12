@@ -43,10 +43,11 @@ else:
             else:
                 center_images.append(config.filepath+row[0])
                 steering_angles.append(angle)
-                center_images.append(config.filepath+row[1].strip())
-                steering_angles.append(angle-config.side_cameras_steering_offset)
-                center_images.append(config.filepath+row[2].strip())
-                steering_angles.append(angle + config.side_cameras_steering_offset)
+                if config.use_side_cams:
+                    center_images.append(config.filepath+row[1].strip())
+                    steering_angles.append(angle-config.side_cameras_steering_offset)
+                    center_images.append(config.filepath+row[2].strip())
+                    steering_angles.append(angle + config.side_cameras_steering_offset)
             #throttle_positions.append(float(row[4]))
             #brake_positions.append(float(row[5]))
             #speed_values.append(float(row[6]))
