@@ -75,14 +75,14 @@ model=keras.Model(inputs=inputs, outputs=steer)
 if config.visualise_loading_dataset:
     (model.summary())
     tf.keras.utils.plot_model(model, "cloning.png", show_shapes=True)
-batches_per_epoch = dataset_size/config.batch_size
+batches_per_epoch = dataset_size/config.batch_size[config.environment]
 eqiuv_decay = (1./config.lr_decay -1)/batches_per_epoch
 
 model.compile(loss=config.loss, optimizer=config.optimizer, metrics=config.metrics)
 print(model.optimizer.get_config())
 model.fit(x=images,
     y=steering_angles,
-    batch_size=config.batch_size,
+    batch_size=config.batch_size[config.environment],
     epochs=config.epochs,
     verbose=1,
     callbacks=None,

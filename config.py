@@ -1,4 +1,5 @@
 import keras
+environment="PC"
 force_dataset_reload=True
 visualise_loading_dataset=False
 save_images_as_array=True
@@ -8,12 +9,12 @@ discard_zero_steering_angles=False
 limit_zero_steering_angles=False
 use_left_cam=True
 use_right_cam=True
-use_center_cam=False
+use_center_cam=True
 left_camera_steering_offset=-0.1
 right_camera_steering_offset=0.05
 zero_steering_angle_frames_limit=500
 validation_split=0.1
-batch_size = 32
+batch_size = {'PC':32,'AWS':250}
 epochs = 5
 dropout_rate=0.5
 learning_rate=0.001
@@ -21,11 +22,10 @@ lr_decay=0.75
 optimizer = keras.optimizers.Adam(lr=learning_rate)
 loss=keras.losses.mse
 metrics=[keras.metrics.mse]
-filepath="/home/workspace/CarND-Behavioral-Cloning-P3/drive_data/data/"
-filepath='c:/Tools/Udacity/Project_4/data/'
+filepath={'PC':'c:/Tools/Udacity/Project_4/data/','AWS':"/home/workspace/CarND-Behavioral-Cloning-P3/drive_data/data/"}
 filename="driving_log.csv"
-images_pickle=filepath+"images.dump"
-labels_pickle=filepath+"labels.dump"
+images_pickle=filepath[environment]+"images.dump"
+labels_pickle=filepath[environment]+"labels.dump"
 expected_header=['center', 'left', 'right', 'steering', 'throttle', 'brake', 'speed']
 crop_mask=[70, 136, 60, 260]
 input_resize_shape=[224, 224, 3] #pre-trained models can't work with custom image sizes this is why we have to bring our images to certain shape. shape defined here will be used througout training process.

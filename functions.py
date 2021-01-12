@@ -25,7 +25,7 @@ def load_dataset_from_imageset():
     throttle_positions = []
     brake_positions = []
     speed_values = []
-    with open(config.filepath+config.filename, newline='') as csvfile:
+    with open(config.filepath[config.environment] +config.filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         header=reader.__next__()
         if header!=config.expected_header:
@@ -34,16 +34,16 @@ def load_dataset_from_imageset():
         for row in reader:
             angle=float(row[3])
             if (angle==0)and(config.discard_zero_steering_angles):
-                zero_center_images.append(config.filepath+row[0])
+                zero_center_images.append(config.filepath[config.environment]+row[0])
             else:
                 if config.use_center_cam:
-                    center_images.append(config.filepath+row[0].strip())
+                    center_images.append(config.filepath[config.environment]+row[0].strip())
                     steering_angles.append(angle)
                 if config.use_left_cam:
-                    center_images.append(config.filepath+row[1].strip())
+                    center_images.append(config.filepath[config.environment]+row[1].strip())
                     steering_angles.append(angle+config.left_camera_steering_offset)
                 if config.use_right_cam:
-                    center_images.append(config.filepath+row[2].strip())
+                    center_images.append(config.filepath[config.environment]+row[2].strip())
                     steering_angles.append(angle + config.right_camera_steering_offset)
             #throttle_positions.append(float(row[4]))
             #brake_positions.append(float(row[5]))
