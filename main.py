@@ -6,56 +6,19 @@ import functions
 import config
 import os.path
 import keras
-import csv
+
 import random
 #import matplotlib.image as mpimg
 #import cv2
 #from keras.backend import tf as ktf
 
-center_images=[]
-zero_center_images=[]
-steering_angles=[]
-throttle_positions=[]
-brake_positions=[]
-speed_values=[]
+
 
 if  (os.path.isfile(config.images_pickle) and os.path.isfile(config.images_pickle)) and (not config.force_dataset_reload):
-    images_file=open(config.images_pickle,'rb')
-    labels_file=open(config.labels_pickle,'rb')
-    images=np.load(images_file)
-    steering_angles=np.load(labels_file)
-    print ("Loaded dataset from files",config.images_pickle," ,",config.labels_pickle)
-    print("Dataset of ", images.shape[0], "x", images[0].shape, "dtype=", images.dtype, " images")
-    images_file.close()
-    labels_file.close()
+    images,steering_angles=functions.load_dataset_from_file()
     dataset_size = len(steering_angles)
 else:
-    with open(config.filepath+config.filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        header=reader.__next__()
-        if header!=config.expected_header:
-            raise Exception("Unexpected header in data file ", config.filename)
-        #zero_steering_frames=0
-        for row in reader:
-            angle=float(row[3])
-            if (angle==0)and(config.discard_zero_steering_angles):
-                zero_center_images.append(config.filepath+row[0])
-            else:
-                center_images.append(config.filepath+row[0])
-                steering_angles.append(angle)
-                if config.use_side_cams:
-                    center_images.append(config.filepath+row[1].strip())
-                    steering_angles.append(angle-config.side_cameras_steering_offset)
-                    center_images.append(config.filepath+row[2].strip())
-                    steering_angles.append(angle + config.side_cameras_steering_offset)
-            #throttle_positions.append(float(row[4]))
-            #brake_positions.append(float(row[5]))
-            #speed_values.append(float(row[6]))
-    if not config.discard_zero_steering_angles:
-        center_images.extend (zero_center_images)
-        zero_angles=np.zeros(len(zero_center_images),dtype=np.float)
-        steering_angles.extend(zero_angles)
-    images=functions.images_load(center_images)
+    images,steering_angles=functions.load_dataset_from_imageset()
     dataset_size=len(steering_angles)
     print ("Dataset length is ",dataset_size)
     #print (steering_angles)

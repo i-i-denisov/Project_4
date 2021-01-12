@@ -1,17 +1,19 @@
 import keras
 force_dataset_reload=True
-visualise_loading_dataset=True
-save_images_as_array=False
+visualise_loading_dataset=False
+save_images_as_array=True
 mirror_augment_enable=False
 freeze_weights=True
 discard_zero_steering_angles=False
 limit_zero_steering_angles=False
-use_side_cams=True
-side_cameras_steering_offset=0.2
+use_left_cam=True
+use_right_cam=True
+use_center_cam=False
+side_cameras_steering_offset=0.1
 zero_steering_angle_frames_limit=500
-validation_split=0.2
+validation_split=0.1
 batch_size = 32
-epochs = 30
+epochs = 5
 dropout_rate=0.5
 learning_rate=0.001
 lr_decay=0.75
