@@ -41,10 +41,10 @@ def load_dataset_from_imageset():
                     steering_angles.append(angle)
                 if config.use_left_cam:
                     center_images.append(config.filepath+row[1].strip())
-                    steering_angles.append(angle-config.side_cameras_steering_offset)
+                    steering_angles.append(angle+config.left_camera_steering_offset)
                 if config.use_right_cam:
                     center_images.append(config.filepath+row[2].strip())
-                    steering_angles.append(angle + config.side_cameras_steering_offset)
+                    steering_angles.append(angle + config.right_camera_steering_offset)
             #throttle_positions.append(float(row[4]))
             #brake_positions.append(float(row[5]))
             #speed_values.append(float(row[6]))
