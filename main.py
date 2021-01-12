@@ -61,14 +61,15 @@ else:
     if config.mirror_augment_enable:
         images,steering_angles=functions.augment_dataset(images,steering_angles,config.visualise_loading_dataset)
     print ("Dataset of ",images.shape[0], "x", images[0].shape, "dtype=", images.dtype, " images")
-    #saving dataset to pickle
-    images_file=open(config.images_pickle,'wb')
-    labels_file=open(config.labels_pickle,'wb')
-    np.save(images_file,images)
-    np.save(labels_file,steering_angles)
-    print("Saved dataset to files", config.images_pickle, " ,", config.labels_pickle)
-    images_file.close()
-    labels_file.close()
+    if config.save_images_as_array:
+        #saving dataset to file
+        images_file=open(config.images_pickle,'wb')
+        labels_file=open(config.labels_pickle,'wb')
+        np.save(images_file,images)
+        np.save(labels_file,steering_angles)
+        print("Saved dataset to files", config.images_pickle, " ,", config.labels_pickle)
+        images_file.close()
+        labels_file.close()
 
 if config.visualise_loading_dataset:
     i=random.randint(0,dataset_size)

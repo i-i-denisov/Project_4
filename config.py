@@ -1,6 +1,7 @@
 import keras
 force_dataset_reload=True
 visualise_loading_dataset=True
+save_images_as_array=False
 mirror_augment_enable=False
 freeze_weights=True
 discard_zero_steering_angles=False
