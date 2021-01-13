@@ -2,7 +2,7 @@ import keras
 environment="PC"
 force_dataset_reload=True
 visualise_loading_dataset=False
-save_images_as_array=True
+save_images_as_array={"PC":True,"AWS":False}
 mirror_augment_enable=True
 freeze_weights=True
 discard_zero_steering_angles=False

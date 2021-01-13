@@ -25,7 +25,7 @@ else:
     if config.mirror_augment_enable:
         images,steering_angles=functions.augment_dataset(images,steering_angles,config.visualise_loading_dataset)
     print ("Dataset of ",images.shape[0], "x", images[0].shape, "dtype=", images.dtype, " images")
-    if config.save_images_as_array:
+    if config.save_images_as_array[config.environment]:
         #saving dataset to file
         images_file=open(config.images_pickle,'wb')
         labels_file=open(config.labels_pickle,'wb')
