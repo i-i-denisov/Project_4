@@ -115,6 +115,7 @@ def images_load(list):
     for file in list:
         try:
             image=cv2.imread(file)
+            cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         except:
             print("Error opening file ", file)
             break

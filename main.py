@@ -71,7 +71,7 @@ FC2=keras.layers.Dense(50,activation='relu')(FC1)
 #FC_dropout_2=keras.layers.Dropout(rate=config.dropout_rate)(FC2)
 FC3=keras.layers.Dense(10,activation='relu')(FC2)
 #FC_dropout_3=keras.layers.Dropout(rate=config.dropout_rate)(FC3)
-steer=keras.layers.Dense(1,activation='relu')(FC3)
+steer=keras.layers.Dense(1,activation='linear')(FC3)
 model=keras.Model(inputs=inputs, outputs=steer)
 #model.summary()
 if config.visualise_loading_dataset:
