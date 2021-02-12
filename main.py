@@ -9,7 +9,7 @@ import keras
 
 import random
 #import matplotlib.image as mpimg
-#import cv2
+import cv2
 #from keras.backend import tf as ktf
 
 
@@ -37,7 +37,7 @@ else:
 
 if config.visualise_loading_dataset:
     i=random.randint(0,dataset_size)
-    plt.imshow(images[i])
+    plt.imshow(cv2.cvtColor(images[i], cv2.COLOR_BGR2RGB))
     plt.show()
     hist, bins=np.histogram(steering_angles,100,[-1,1])
     plt.hist(steering_angles, bins)
@@ -73,7 +73,7 @@ FC3=keras.layers.Dense(10,activation='relu')(FC2)
 #FC_dropout_3=keras.layers.Dropout(rate=config.dropout_rate)(FC3)
 steer=keras.layers.Dense(1,activation='linear')(FC3)
 model=keras.Model(inputs=inputs, outputs=steer)
-#model.summary()
+model.summary()
 if config.visualise_loading_dataset:
     (model.summary())
     tf.keras.utils.plot_model(model, "cloning.png", show_shapes=True)

@@ -1,18 +1,15 @@
 import keras
 environment="PC"
 force_dataset_reload=True
-visualise_loading_dataset=False
+visualise_loading_dataset=True
 save_images_as_array={"PC":True,"AWS":False}
-mirror_augment_enable=True
+mirror_augment_enable=False
 freeze_weights=True
-discard_zero_steering_angles=False
-limit_zero_steering_angles=False
 use_left_cam=True
 use_right_cam=True
 use_center_cam=True
 left_camera_steering_offset=0.2
 right_camera_steering_offset=-0.2
-zero_steering_angle_frames_limit=500
 validation_split=0.2
 batch_size = {'PC':32,'AWS':250}
 epochs = 3
