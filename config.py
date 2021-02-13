@@ -1,9 +1,10 @@
 import keras
+imgsize=[240,320,3]
 environment="PC"
 force_dataset_reload=True
 visualise_loading_dataset=True
 save_images_as_array={"PC":True,"AWS":False}
-mirror_augment_enable=False
+mirror_augment_enable=True
 freeze_weights=True
 use_left_cam=True
 use_right_cam=True
@@ -12,6 +13,7 @@ left_camera_steering_offset=0.2
 right_camera_steering_offset=-0.2
 validation_split=0.2
 batch_size = {'PC':32,'AWS':250}
+batch_factor={True:2,False:1}
 epochs = 3
 dropout_rate=0.5
 learning_rate=0.001

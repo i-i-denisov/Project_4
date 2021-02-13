@@ -4,47 +4,37 @@ import numpy as np
 import tensorflow as tf
 import functions
 import config
-import os.path
-import keras
 
-import random
+import keras
+from sklearn.model_selection import train_test_split
+
 #import matplotlib.image as mpimg
 import cv2
-#from keras.backend import tf as ktf
 
 
 
-if  (os.path.isfile(config.images_pickle) and os.path.isfile(config.images_pickle)) and (not config.force_dataset_reload):
-    images,steering_angles=functions.load_dataset_from_file()
-    dataset_size = len(steering_angles)
-else:
-    images,steering_angles=functions.load_dataset_from_imageset()
-    dataset_size=len(steering_angles)
-    print ("Dataset length is ",dataset_size)
-    #print (steering_angles)
-    if config.mirror_augment_enable:
-        images,steering_angles=functions.augment_dataset(images,steering_angles,config.visualise_loading_dataset)
-    print ("Dataset of ",images.shape[0], "x", images[0].shape, "dtype=", images.dtype, " images")
-    if config.save_images_as_array[config.environment]:
-        #saving dataset to file
-        images_file=open(config.images_pickle,'wb')
-        labels_file=open(config.labels_pickle,'wb')
-        np.save(images_file,images)
-        np.save(labels_file,steering_angles)
-        print("Saved dataset to files", config.images_pickle, " ,", config.labels_pickle)
-        images_file.close()
-        labels_file.close()
 
-if config.visualise_loading_dataset:
-    i=random.randint(0,dataset_size)
-    plt.imshow(cv2.cvtColor(images[i], cv2.COLOR_BGR2RGB))
-    plt.show()
-    hist, bins=np.histogram(steering_angles,100,[-1,1])
-    plt.hist(steering_angles, bins)
-    plt.show()
+
+imagefiles,steering_angles=functions.load_dataset()
+dataset_size=len(steering_angles)
+#print ("Dataset length is ",dataset_size)
+try:
+    image = cv2.imread(imagefiles[0])
+    imgshape = image.shape
+    print(f'image shape is {imgshape}')
+except:
+    print("Error opening file ", imagefiles[0])
+train_files, validate_files, train_y, validate_y=train_test_split(imagefiles,steering_angles,test_size=config.validation_split)
+train_len=len(train_y)
+validate_len=len(validate_y)
+print (f' training images {len(train_files)} training labels {train_len}')
+print (f' validation images {len(validate_files)} training labels {validate_len}')
+
+train_gen=functions.gen_images_load(train_files,train_y)
+validate_gen=functions.gen_images_load(validate_files,validate_y)
+
 
 ##trainig pipeline
-imgshape=images[0].shape
 inputs=keras.Input(imgshape)
 #TODO crop and resize here
 crop=keras.layers.Cropping2D(cropping=((config.crop_mask[0],imgshape[0]-config.crop_mask[1]),(config.crop_mask[2],imgshape[1]-config.crop_mask[3])))(inputs)
@@ -73,22 +63,21 @@ FC3=keras.layers.Dense(10,activation='relu')(FC2)
 #FC_dropout_3=keras.layers.Dropout(rate=config.dropout_rate)(FC3)
 steer=keras.layers.Dense(1,activation='linear')(FC3)
 model=keras.Model(inputs=inputs, outputs=steer)
-model.summary()
-if config.visualise_loading_dataset:
-    (model.summary())
-    tf.keras.utils.plot_model(model, "cloning.png", show_shapes=True)
-batches_per_epoch = dataset_size/config.batch_size[config.environment]
+#model.summary()
+
+batches_per_epoch = dataset_size/config.batch_size[config.environment]*config.batch_factor[config.mirror_augment_enable]
+steps_per_epoch=dataset_size*config.batch_factor[config.mirror_augment_enable]
+print(f'Dataset length is {dataset_size}, batch size is {config.batch_size[config.environment]}, mirror augmentation {config.mirror_augment_enable}\n batches per epoch {batches_per_epoch}' )
 eqiuv_decay = (1./config.lr_decay -1)/batches_per_epoch
 
 model.compile(loss=config.loss, optimizer=config.optimizer, metrics=config.metrics)
 print(model.optimizer.get_config())
-model.fit(x=images,
-    y=steering_angles,
-    batch_size=config.batch_size[config.environment],
+model.fit_generator(train_gen,
     epochs=config.epochs,
+    steps_per_epoch=int(train_len*config.batch_factor[config.mirror_augment_enable]/config.batch_size[config.environment]),
     verbose=1,
     callbacks=None,
-    validation_split=config.validation_split,
-    shuffle=True
+    validation_data=validate_gen,
+    validation_steps=int(validate_len*config.batch_factor[config.mirror_augment_enable]/config.batch_size[config.environment])
 )
 model.save(config.model_savename)
