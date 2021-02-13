@@ -39,22 +39,23 @@ def load_dataset():
     return filenames,steering_angles
 
 def gen_images_load(image_files,labels,batch_size = 32):
-    if config.mirror_augment_enable:
-        batch_size=int(batch_size/2)
-    dataset_size = len(labels)
-    assert dataset_size==len(image_files), "mismatch between images and labels number"
-    for batch in range(0,dataset_size,batch_size):
-        batch_files,batch_labels=image_files[batch:batch+batch_size],labels[batch:batch+batch_size]
-        batch_images=images_load(batch_files)
-        #print(f'loaded {len(batch_files)} images')
-        #print(f'image array size:{batch_images.shape}')
+    while True:
         if config.mirror_augment_enable:
-            aug_images,aug_labels=augment_w_mirror(batch_images,batch_labels)
-            batch_images=np.append(batch_images,aug_images,axis=0)
-            batch_labels=np.append(batch_labels,aug_labels)
-            #print (f' imageset augmented with mirroring')
-            #print (f' new image array size is: {batch_images.shape}')
-        yield batch_images,batch_labels
+            batch_size=int(batch_size/2)
+        dataset_size = len(labels)
+        assert dataset_size==len(image_files), "mismatch between images and labels number"
+        for batch in range(0,dataset_size,batch_size):
+            batch_files,batch_labels=image_files[batch:batch+batch_size],labels[batch:batch+batch_size]
+            batch_images=images_load(batch_files)
+            #print(f'loaded {len(batch_files)} images')
+            #print(f'image array size:{batch_images.shape}')
+            if config.mirror_augment_enable:
+                aug_images,aug_labels=augment_w_mirror(batch_images,batch_labels)
+                batch_images=np.append(batch_images,aug_images,axis=0)
+                batch_labels=np.append(batch_labels,aug_labels)
+                #print (f' imageset augmented with mirroring')
+                #print (f' new image array size is: {batch_images.shape}')
+            yield batch_images,batch_labels
 
 def augment_dataset(images , labels,visualise=False): # TODO: write a code that can be reused for adding types of augmentations to be used as an input
     dataset_size = len(images)
