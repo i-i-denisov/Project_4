@@ -21,7 +21,7 @@ lr_decay=0.75
 optimizer = keras.optimizers.Adam(lr=learning_rate)
 loss=keras.losses.mse
 metrics=[keras.metrics.mse]
-filepath={'PC':'c:/Tools/Udacity/Project_4/data/','AWS':"/home/workspace/CarND-Behavioral-Cloning-P3/drive_data/data/"}
+filepath={'PC':'c:/Tools/Udacity/Project_4/data/','AWS':"/opt/carnd_p3/data/"}
 filename="driving_log.csv"
 images_pickle=filepath[environment]+"images.dump"
 labels_pickle=filepath[environment]+"labels.dump"
