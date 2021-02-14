@@ -38,10 +38,10 @@ def load_dataset():
             #speed_values.append(float(row[6]))
     return filenames,steering_angles
 
-def gen_images_load(image_files,labels,batch_size = 32):
+def gen_images_load(image_files,labels,training=True,batch_size = 32):
     while True:
-        if config.mirror_augment_enable:
-            batch_size=int(batch_size/2)
+        if config.mirror_augment_enable & training:
+            batch_size=int(batch_size/config.batch_factor[config.mirror_augment_enable])
         dataset_size = len(labels)
         assert dataset_size==len(image_files), "mismatch between images and labels number"
         for batch in range(0,dataset_size,batch_size):
@@ -49,7 +49,7 @@ def gen_images_load(image_files,labels,batch_size = 32):
             batch_images=images_load(batch_files)
             #print(f'loaded {len(batch_files)} images')
             #print(f'image array size:{batch_images.shape}')
-            if config.mirror_augment_enable:
+            if config.mirror_augment_enable & training:
                 aug_images,aug_labels=augment_w_mirror(batch_images,batch_labels)
                 batch_images=np.append(batch_images,aug_images,axis=0)
                 batch_labels=np.append(batch_labels,aug_labels)

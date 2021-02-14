@@ -25,13 +25,14 @@ try:
 except:
     print("Error opening file ", imagefiles[0])
 train_files, validate_files, train_y, validate_y=train_test_split(imagefiles,steering_angles,test_size=config.validation_split)
+print (train_files[0])
 train_len=len(train_y)
 validate_len=len(validate_y)
 print (f' training images {len(train_files)} training labels {train_len}')
 print (f' validation images {len(validate_files)} training labels {validate_len}')
 
 train_gen=functions.gen_images_load(train_files,train_y)
-validate_gen=functions.gen_images_load(validate_files,validate_y)
+validate_gen=functions.gen_images_load(validate_files,validate_y,training=False)
 
 
 ##trainig pipeline
@@ -65,7 +66,7 @@ steer=keras.layers.Dense(1,activation='linear')(FC3)
 model=keras.Model(inputs=inputs, outputs=steer)
 #model.summary()
 
-batches_per_epoch = dataset_size/config.batch_size[config.environment]*config.batch_factor[config.mirror_augment_enable]
+batches_per_epoch = train_len/config.batch_size[config.environment]*config.batch_factor[config.mirror_augment_enable]
 steps_per_epoch=dataset_size*config.batch_factor[config.mirror_augment_enable]
 print(f'Dataset length is {dataset_size}, batch size is {config.batch_size[config.environment]}, mirror augmentation {config.mirror_augment_enable}\n batches per epoch {batches_per_epoch}' )
 eqiuv_decay = (1./config.lr_decay -1)/batches_per_epoch
@@ -78,6 +79,6 @@ model.fit_generator(train_gen,
     verbose=1,
     callbacks=None,
     validation_data=validate_gen,
-    validation_steps=int(validate_len*config.batch_factor[config.mirror_augment_enable]/config.batch_size[config.environment])
+    validation_steps=int(validate_len/config.batch_size[config.environment])
 )
 model.save(config.model_savename)
