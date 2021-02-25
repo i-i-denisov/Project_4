@@ -1,4 +1,5 @@
 import keras
+from numpy import zeros
 imgsize=[240,320,3]
 environment="PC"
 force_dataset_reload=True
@@ -29,3 +30,5 @@ expected_header=['center', 'left', 'right', 'steering', 'throttle', 'brake', 'sp
 crop_mask=[70, 136, 60, 260]
 input_resize_shape=[224, 224, 3] #pre-trained models can't work with custom image sizes this is why we have to bring our images to certain shape. shape defined here will be used througout training process.
 model_savename='model.h5'
+global batch_uses
+batch_uses=zeros(1206,dtype=int)

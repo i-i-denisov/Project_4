@@ -25,7 +25,6 @@ try:
 except:
     print("Error opening file ", imagefiles[0])
 train_files, validate_files, train_y, validate_y=train_test_split(imagefiles,steering_angles,test_size=config.validation_split)
-print (train_files[0])
 train_len=len(train_y)
 validate_len=len(validate_y)
 print (f' training images {len(train_files)} training labels {train_len}')
@@ -66,19 +65,21 @@ steer=keras.layers.Dense(1,activation='linear')(FC3)
 model=keras.Model(inputs=inputs, outputs=steer)
 #model.summary()
 
-batches_per_epoch = train_len/config.batch_size[config.environment]*config.batch_factor[config.mirror_augment_enable]
-steps_per_epoch=dataset_size*config.batch_factor[config.mirror_augment_enable]
-print(f'Dataset length is {dataset_size}, batch size is {config.batch_size[config.environment]}, mirror augmentation {config.mirror_augment_enable}\n batches per epoch {batches_per_epoch}' )
-eqiuv_decay = (1./config.lr_decay -1)/batches_per_epoch
+
+train_batches_per_epoch=np.ceil(train_len*config.batch_factor[config.mirror_augment_enable]/config.batch_size[config.environment])
+validate_batches_per_epoch=np.ceil(validate_len/config.batch_size[config.environment])
+print(f'Dataset length is {dataset_size}, batch size is {config.batch_size[config.environment]}, mirror augmentation {config.mirror_augment_enable}' )
+print(f'training batches per epoch {train_batches_per_epoch} validation batches per epoch {validate_batches_per_epoch}')
 
 model.compile(loss=config.loss, optimizer=config.optimizer, metrics=config.metrics)
 print(model.optimizer.get_config())
 model.fit_generator(train_gen,
     epochs=config.epochs,
-    steps_per_epoch=int(train_len*config.batch_factor[config.mirror_augment_enable]/config.batch_size[config.environment]),
+    steps_per_epoch=train_batches_per_epoch,
     verbose=1,
     callbacks=None,
     validation_data=validate_gen,
-    validation_steps=int(validate_len/config.batch_size[config.environment])
+    validation_steps=validate_batches_per_epoch
 )
 model.save(config.model_savename)
+#print (config.batch_uses)

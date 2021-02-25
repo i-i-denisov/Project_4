@@ -39,14 +39,21 @@ def load_dataset():
     return filenames,steering_angles
 
 def gen_images_load(image_files,labels,training=True,batch_size = 32):
+    if config.mirror_augment_enable & training:
+        batch_size = int(batch_size / config.batch_factor[config.mirror_augment_enable])
+
     while True:
-        if config.mirror_augment_enable & training:
-            batch_size=int(batch_size/config.batch_factor[config.mirror_augment_enable])
         dataset_size = len(labels)
+        print (f' dataset size is {dataset_size}')
         assert dataset_size==len(image_files), "mismatch between images and labels number"
+        #batch=0
         for batch in range(0,dataset_size,batch_size):
             batch_files,batch_labels=image_files[batch:batch+batch_size],labels[batch:batch+batch_size]
             batch_images=images_load(batch_files)
+            #if training:
+            #        i=int(batch/batch_size)
+            #        config.batch_uses[i]+=1
+            #print(f'batch number {batch}, images in batch {len(batch_labels)} image shape is {batch_images.shape} ')
             #print(f'loaded {len(batch_files)} images')
             #print(f'image array size:{batch_images.shape}')
             if config.mirror_augment_enable & training:
@@ -55,7 +62,9 @@ def gen_images_load(image_files,labels,training=True,batch_size = 32):
                 batch_labels=np.append(batch_labels,aug_labels)
                 #print (f' imageset augmented with mirroring')
                 #print (f' new image array size is: {batch_images.shape}')
+                #print (f'batch number {batch}, images in batch {len(batch_labels)} image shape is {batch_images.shape} ')
             yield batch_images,batch_labels
+        #print(batch)
 
 def augment_dataset(images , labels,visualise=False): # TODO: write a code that can be reused for adding types of augmentations to be used as an input
     dataset_size = len(images)
